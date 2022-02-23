@@ -1,31 +1,45 @@
-import { useRouter } from "next/router";
+import Head from "next/head";
 import React, { Fragment } from "react";
 import EventList from "../../components/events/EventList";
 import ResultTitle from "../../components/events/results-title";
 import ErrorAlert from "../../components/events/ui/error-alert";
 import Button from "../../components/events/ui/Button";
 import { getFilteredEvents } from "../../helpers/api-util";
+import { useRouter } from "next/router";
 
 const EventBySlug = (props) => {
-	// const router = useRouter();
+	const router = useRouter();
 
-	// const filterData = router.query.slug;
+	const filterData = router.query.slug;
 
 	const { hasError, events, date } = props;
 
+	let pageHeadData = (
+		<Head>
+			<title>Filtered Events</title>
+			<meta name='description' content={`A liat of filtered events.`} />
+		</Head>
+	);
+
 	if (!events) {
-		return <p className='center'>Loading.....</p>;
+		return (
+			<div>
+				{pageHeadData}
+				<p className='center'>Loading.....</p>;
+			</div>
+		);
 	}
 
-	// const filteredYear = filterData[0];
-	// const filteredMonth = filterData[1];
+	const filteredYear = filterData[0];
+	const filteredMonth = filterData[1];
 
-	// const numYear = +filteredYear;
-	// const numMonth = +filteredMonth;
+	const numYear = +filteredYear;
+	const numMonth = +filteredMonth;
 
 	if (hasError) {
 		return (
 			<Fragment>
+				{pageHeadData}
 				<ErrorAlert>
 					<p>Invalid Filter. Please adjust your values</p>;
 				</ErrorAlert>
@@ -41,9 +55,20 @@ const EventBySlug = (props) => {
 	// 	month: numMonth
 	// });
 
+	pageHeadData = (
+		<Head>
+			<title>Filtered Events</title>
+			<meta
+				name='description'
+				content={`All events for ${numMonth}/${numYear}.`}
+			/>
+		</Head>
+	);
+
 	if (!events || events.length === 0) {
 		return (
 			<Fragment>
+				{pageHeadData}
 				<ErrorAlert>
 					<p>No events found for the chosen filter!!</p>
 				</ErrorAlert>
@@ -58,6 +83,7 @@ const EventBySlug = (props) => {
 
 	return (
 		<Fragment>
+			{pageHeadData}
 			<ResultTitle date={dates} />
 			<EventList items={events} />
 		</Fragment>
